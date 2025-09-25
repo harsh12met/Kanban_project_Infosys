@@ -1,0 +1,62 @@
+<!-- Add Task Button (when form is hidden) -->
+<div class="add-task-container">
+  <button *ngIf="!isFormVisible" 
+          class="add-task-btn" 
+          (click)="showForm()">
+    <span class="plus-icon">+</span>
+    Add a task
+  </button>
+
+  <!-- Add Task Form (when form is visible) -->
+  <div *ngIf="isFormVisible" 
+       class="add-task-form" 
+       (keydown)="onKeydown($event)">
+    
+    <form (ngSubmit)="onFormSubmit()" #taskForm="ngForm">
+      <!-- Task Title Input -->
+      <input 
+        type="text" 
+        [(ngModel)]="taskTitle" 
+        name="taskTitle"
+        class="add-task-title" 
+        placeholder="Enter a title for this task..."
+        required
+        maxlength="100">
+
+      <!-- Task Description Textarea -->
+      <textarea 
+        [(ngModel)]="taskDescription" 
+        name="taskDescription"
+        class="add-task-description" 
+        placeholder="Enter a description (optional)..."
+        rows="3"
+        maxlength="500"></textarea>
+
+      <!-- Priority Selection -->
+      <div class="priority-section">
+        <label class="priority-label">Priority:</label>
+        <select [(ngModel)]="taskPriority" 
+                name="taskPriority" 
+                class="priority-select">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="submit" 
+                class="submit-btn" 
+                [disabled]="!taskTitle.trim()">
+          Add Task
+        </button>
+        <button type="button" 
+                class="cancel-btn" 
+                (click)="hideForm()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

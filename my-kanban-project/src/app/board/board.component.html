@@ -1,0 +1,59 @@
+<!-- Kanban Board -->
+<div class="kanban-board">
+  <!-- Board Header -->
+  <div class="board-header">
+    <h2 class="board-title">My Kanban Task Manager</h2>
+    <div class="board-stats">
+      <span class="stat-item">
+        <strong>{{ getTaskStatistics().total }}</strong> Total Tasks
+      </span>
+      <span class="stat-item todo-stat">
+        <strong>{{ getTaskStatistics().todo }}</strong> To Do
+      </span>
+      <span class="stat-item progress-stat">
+        <strong>{{ getTaskStatistics().inprogress }}</strong> In Progress
+      </span>
+      <span class="stat-item done-stat">
+        <strong>{{ getTaskStatistics().done }}</strong> Done
+      </span>
+    </div>
+  </div>
+
+  <!-- Columns Container -->
+  <div class="columns-container">
+    <app-column
+      *ngFor="let column of columns; trackBy: trackColumnById"
+      [columnId]="column.id"
+      [title]="column.title"
+      [tasks]="column.tasks"
+      (tasksUpdated)="onTasksUpdated()"
+      (addColumnRequested)="openAddColumnForm(column.id)"
+      class="column-wrapper"
+    >
+    </app-column>
+
+    <!-- Add Column Form -->
+    <div *ngIf="showAddColumn" class="add-column-form">
+      <h3>Add New Column</h3>
+      <div class="form-group">
+        <label for="columnTitle">Column Title:</label>
+        <input
+          type="text"
+          id="columnTitle"
+          [(ngModel)]="newColumnTitle"
+          placeholder="Enter column title"
+          class="form-control"
+          autofocus
+        />
+      </div>
+      <div class="form-actions">
+        <button (click)="addColumn()" class="btn btn-success">
+          Add Column
+        </button>
+        <button (click)="cancelAddColumn()" class="btn btn-cancel">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

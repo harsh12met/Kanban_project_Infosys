@@ -1,0 +1,76 @@
+<!-- Task Card -->
+<div class="task-card" 
+     [class]="getPriorityClass()" 
+     draggable="true" 
+     (dragstart)="onDragStart($event)">
+
+  <!-- View Mode -->
+  <div *ngIf="!isEditing" class="task-view">
+    <!-- Task Header -->
+    <div class="task-header">
+      <h4 class="task-title">{{ task.title }}</h4>
+      <div class="task-actions">
+        <button class="edit-btn" (click)="startEdit()" title="Edit task">
+          ✏️
+        </button>
+        <button class="delete-btn" (click)="deleteTask()" title="Delete task">
+          🗑️
+        </button>
+      </div>
+    </div>
+
+    <!-- Task Description -->
+    <p class="task-description" *ngIf="task.description">
+      {{ task.description }}
+    </p>
+
+    <!-- Task Priority Badge -->
+    <div class="task-footer">
+      <span class="priority-badge" [class]="getPriorityClass()">
+        {{ task.priority }} Priority
+      </span>
+      <small class="task-date">
+        {{ task.createdAt | date:'short' }}
+      </small>
+    </div>
+  </div>
+
+  <!-- Edit Mode -->
+  <div *ngIf="isEditing" class="task-edit">
+    <form (ngSubmit)="saveEdit()">
+      <!-- Edit Title -->
+      <input 
+        type="text" 
+        [(ngModel)]="editTitle" 
+        name="editTitle"
+        class="edit-title-input" 
+        placeholder="Task title..."
+        required>
+
+      <!-- Edit Description -->
+      <textarea 
+        [(ngModel)]="editDescription" 
+        name="editDescription"
+        class="edit-description-input" 
+        placeholder="Task description..."
+        rows="3"></textarea>
+
+      <!-- Edit Priority -->
+      <select [(ngModel)]="editPriority" name="editPriority" class="edit-priority-select">
+        <option value="Low">Low Priority</option>
+        <option value="Medium">Medium Priority</option>
+        <option value="High">High Priority</option>
+      </select>
+
+      <!-- Edit Actions -->
+      <div class="edit-actions">
+        <button type="submit" class="save-btn" [disabled]="!editTitle.trim()">
+          Save
+        </button>
+        <button type="button" class="cancel-btn" (click)="cancelEdit()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

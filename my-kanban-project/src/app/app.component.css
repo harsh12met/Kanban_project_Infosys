@@ -1,0 +1,24 @@
+/* App Container Styles */
+.app-container {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Reset any default margins and paddings */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure the app takes full viewport */
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}

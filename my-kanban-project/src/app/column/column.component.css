@@ -1,0 +1,270 @@
+/* Kanban Column Styles - Full Height with Equal Width */
+.kanban-column {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 0;
+  height: 100%; /* Take full height of parent */
+  display: flex;
+  flex-direction: column;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden; /* Prevent overflow from this container */
+}
+
+.kanban-column.drag-over {
+  border-color: #4caf50;
+  background: #f1f8e9;
+}
+
+/* Column Header */
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  margin: 0;
+  border-bottom: 2px solid #e0e0e0;
+  background: #ffffff;
+  border-radius: 8px 8px 0 0;
+  flex-shrink: 0; /* Don't shrink header */
+}
+
+.column-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.column-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-count {
+  background: #e0e0e0;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.add-column-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-column-btn:hover {
+  background-color: #45a049;
+  transform: scale(1.1);
+}
+
+/* Add Task Component Container */
+.add-task-container {
+  padding: 16px;
+  flex-shrink: 0; /* Don't shrink add task area */
+  background: #f8f9fa;
+}
+
+/* Tasks Container - Scrollable Area */
+.tasks-container {
+  flex: 1; /* Take remaining space */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 8px 16px 16px 16px;
+  background: #f8f9fa;
+  border-radius: 0 0 8px 8px;
+  min-height: 0; /* Allow shrinking */
+}
+
+/* Custom Scrollbar */
+.tasks-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tasks-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.tasks-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 20px 10px;
+  color: #999;
+  margin-top: 20px;
+}
+
+.empty-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.empty-message {
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Drop Zones for Task Reordering */
+.drop-zone {
+  height: 12px;
+  margin: 4px 0;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+/* Active drop zone styling when dragging over */
+.drop-zone.active-drop-zone {
+  height: 24px;
+  background-color: rgba(76, 175, 80, 0.3);
+  border: 2px dashed #4caf50;
+}
+
+/* Pulsing animation for active drop zones */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.active-drop-zone {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Drop Indicator */
+.drop-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(76, 175, 80, 0.1);
+  border: 2px dashed #4caf50;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.drop-text {
+  background: #4caf50;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Column Specific Colors */
+.kanban-column:nth-child(1) .column-title {
+  color: #1976d2; /* Blue for To Do */
+}
+
+.kanban-column:nth-child(1) .task-count {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.kanban-column:nth-child(2) .column-title {
+  color: #f57c00; /* Orange for In Progress */
+}
+
+.kanban-column:nth-child(2) .task-count {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.kanban-column:nth-child(3) .column-title {
+  color: #388e3c; /* Green for Done */
+}
+
+.kanban-column:nth-child(3) .task-count {
+  background: #e8f5e8;
+  color: #388e3c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .column-header {
+    padding: 12px;
+  }
+  
+  .column-title {
+    font-size: 16px;
+  }
+  
+  .add-task-container {
+    padding: 12px;
+  }
+  
+  .tasks-container {
+    padding: 6px 12px 12px 12px;
+  }
+  
+  .empty-state {
+    padding: 30px 15px;
+  }
+  
+  .empty-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  
+  .empty-message {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .column-header {
+    padding: 8px;
+  }
+  
+  .column-title {
+    font-size: 14px;
+  }
+  
+  .task-count {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+  
+  .add-task-container {
+    padding: 8px;
+  }
+  
+  .tasks-container {
+    padding: 4px 8px 8px 8px;
+  }
+}

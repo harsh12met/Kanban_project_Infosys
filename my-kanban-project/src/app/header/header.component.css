@@ -1,0 +1,13 @@
+h2 {
+  margin: 0;
+  padding: 16px 24px;
+  background-color: #0052cc;
+  color: white;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid #dfe1e6;
+  flex-shrink: 0;
+}

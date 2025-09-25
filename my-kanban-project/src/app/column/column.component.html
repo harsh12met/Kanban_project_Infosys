@@ -1,0 +1,79 @@
+<!-- Kanban Column -->
+<div
+  [class]="getColumnClass()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <!-- Column Header -->
+  <div class="column-header">
+    <h3 class="column-title">{{ title }}</h3>
+    <div class="column-actions">
+      <span class="task-count">{{ tasks.length }}</span>
+      <button
+        class="add-column-btn"
+        (click)="requestAddColumn()"
+        title="Add new column"
+      >
+        +
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Task Component (only shown for todo column) -->
+  <div *ngIf="shouldShowAddButton()" class="add-task-container">
+    <app-add-task [columnStatus]="columnId" (taskAdded)="onTaskAdded()">
+    </app-add-task>
+  </div>
+
+  <!-- Tasks Container - Scrollable -->
+  <div class="tasks-container">
+    <!-- Drop zone at the top -->
+    <div
+      class="drop-zone"
+      [class.active-drop-zone]="dragOverIndex === 0"
+      (dragover)="onDragOverAtIndex($event, 0)"
+      (drop)="onDropAtIndex($event, 0)"
+    ></div>
+
+    <!-- Individual Tasks with drop zones -->
+    <ng-container
+      *ngFor="let task of tasks; let i = index; trackBy: trackTaskById"
+    >
+      <!-- The actual task -->
+      <app-task
+        [task]="task"
+        (taskUpdated)="onTaskUpdated()"
+        (taskDeleted)="onTaskDeleted()"
+      >
+      </app-task>
+
+      <!-- Drop zone after each task -->
+      <div
+        class="drop-zone"
+        [class.active-drop-zone]="dragOverIndex === i + 1"
+        (dragover)="onDragOverAtIndex($event, i + 1)"
+        (drop)="onDropAtIndex($event, i + 1)"
+      ></div>
+    </ng-container>
+
+    <!-- Empty State -->
+    <div *ngIf="tasks.length === 0" class="empty-state">
+      <div class="empty-icon">📋</div>
+      <p class="empty-message">
+        {{
+          columnId === "todo"
+            ? "Click + to add new tasks"
+            : columnId === "inprogress"
+            ? "Drag tasks here from Todo"
+            : "Drag completed tasks here"
+        }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Drop Zone Indicator -->
+  <div *ngIf="isDragOver" class="drop-indicator">
+    <span class="drop-text">Drop task here</span>
+  </div>
+</div>
