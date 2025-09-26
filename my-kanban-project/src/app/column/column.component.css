@@ -56,9 +56,7 @@
   text-align: center;
 }
 
-.add-column-btn {
-  background-color: #4caf50;
-  color: white;
+.add-column-btn, .remove-column-btn {
   border: none;
   border-radius: 50%;
   width: 24px;
@@ -72,8 +70,23 @@
   transition: all 0.2s ease;
 }
 
+.add-column-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
 .add-column-btn:hover {
   background-color: #45a049;
+  transform: scale(1.1);
+}
+
+.remove-column-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.remove-column-btn:hover {
+  background-color: #d32f2f;
   transform: scale(1.1);
 }
 

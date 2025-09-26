@@ -1,15 +1,15 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { TaskComponent } from '../task/task.component';
-import { AddTaskComponent } from '../add-task/add-task.component';
-import { Task, TaskService } from '../services/task.service';
+import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { TaskComponent } from "../task/task.component";
+import { AddTaskComponent } from "../add-task/add-task.component";
+import { Task, TaskService } from "../services/task.service";
 
 @Component({
-  selector: 'app-column',
+  selector: "app-column",
   standalone: true,
   imports: [CommonModule, TaskComponent, AddTaskComponent],
-  templateUrl: './column.component.html',
-  styleUrl: './column.component.css',
+  templateUrl: "./column.component.html",
+  styleUrl: "./column.component.css",
 })
 export class ColumnComponent {
   @Input() columnId!: string;
@@ -17,6 +17,7 @@ export class ColumnComponent {
   @Input() tasks: Task[] = [];
   @Output() tasksUpdated = new EventEmitter<void>();
   @Output() addColumnRequested = new EventEmitter<string>();
+  @Output() removeColumnRequested = new EventEmitter<string>();
 
   isDragOver = false;
   dragOverIndex = -1;
@@ -25,7 +26,7 @@ export class ColumnComponent {
 
   onDragOver(e: DragEvent) {
     e.preventDefault();
-    e.dataTransfer!.dropEffect = 'move';
+    e.dataTransfer!.dropEffect = "move";
     this.isDragOver = true;
   }
 
@@ -39,7 +40,7 @@ export class ColumnComponent {
     e.preventDefault();
     this.isDragOver = false;
     this.dragOverIndex = -1;
-    const taskId = parseInt(e.dataTransfer!.getData('text/plain'));
+    const taskId = parseInt(e.dataTransfer!.getData("text/plain"));
     const task = this.taskService.getTaskById(taskId);
     if (task && task.status !== this.columnId) {
       this.taskService.moveTask(taskId, this.columnId);
@@ -50,7 +51,7 @@ export class ColumnComponent {
   onDragOverAtIndex(e: DragEvent, index: number) {
     e.preventDefault();
     e.stopPropagation();
-    e.dataTransfer!.dropEffect = 'move';
+    e.dataTransfer!.dropEffect = "move";
     this.dragOverIndex = index;
     this.isDragOver = true;
   }
@@ -61,7 +62,7 @@ export class ColumnComponent {
     this.isDragOver = false;
     this.dragOverIndex = -1;
 
-    const taskId = parseInt(e.dataTransfer!.getData('text/plain'));
+    const taskId = parseInt(e.dataTransfer!.getData("text/plain"));
     if (isNaN(taskId)) return;
     const task = this.taskService.getTaskById(taskId);
     if (!task) return;
@@ -92,14 +93,34 @@ export class ColumnComponent {
     this.tasksUpdated.emit();
   }
   getColumnClass() {
-    return 'kanban-column' + (this.isDragOver ? ' drag-over' : '');
+    return "kanban-column" + (this.isDragOver ? " drag-over" : "");
   }
   shouldShowAddButton() {
-    return this.columnId === 'todo';
+    return this.columnId === "todo";
   }
   requestAddColumn() {
     this.addColumnRequested.emit(this.columnId);
   }
+
+  requestRemoveColumn() {
+    if (this.canRemoveColumn()) {
+      const confirmDelete = confirm(
+        `Are you sure you want to delete the "${this.title}" column? All tasks will be moved to another column.`
+      );
+      if (confirmDelete) {
+        this.removeColumnRequested.emit(this.columnId);
+      }
+    }
+  }
+
+  canRemoveColumn(): boolean {
+    return !this.isDefaultColumn();
+  }
+
+  isDefaultColumn(): boolean {
+    return ["todo", "inprogress", "done"].includes(this.columnId);
+  }
+
   trackTaskById(index: number, task: Task) {
     return task.id;
   }

@@ -17,6 +17,14 @@
       >
         +
       </button>
+      <button
+        *ngIf="!isDefaultColumn()"
+        class="remove-column-btn"
+        (click)="requestRemoveColumn()"
+        title="Remove this column"
+      >
+        ×
+      </button>
     </div>
   </div>
 

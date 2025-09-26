@@ -28,6 +28,7 @@
       [tasks]="column.tasks"
       (tasksUpdated)="onTasksUpdated()"
       (addColumnRequested)="openAddColumnForm(column.id)"
+      (removeColumnRequested)="removeColumn($event)"
       class="column-wrapper"
     >
     </app-column>

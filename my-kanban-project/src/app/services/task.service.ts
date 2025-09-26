@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
 
 export interface Task {
   id: number;
   title: string;
   description: string;
-  priority: 'Low' | 'Medium' | 'High';
+  priority: "Low" | "Medium" | "High";
   status: string;
   createdAt: Date;
   order: number;
@@ -18,7 +18,7 @@ export interface Column {
   order: number;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class TaskService {
   private tasksSubject = new BehaviorSubject<Task[]>([]);
   private columnsSubject = new BehaviorSubject<Column[]>([]);
@@ -33,7 +33,7 @@ export class TaskService {
 
   private loadData() {
     // Load tasks
-    const tasks = JSON.parse(localStorage.getItem('kanban-tasks') || '[]').map(
+    const tasks = JSON.parse(localStorage.getItem("kanban-tasks") || "[]").map(
       (t: any) => ({
         ...t,
         createdAt: new Date(t.createdAt),
@@ -47,16 +47,16 @@ export class TaskService {
 
     // Load columns
     const columns = JSON.parse(
-      localStorage.getItem('kanban-columns') || 'null'
+      localStorage.getItem("kanban-columns") || "null"
     ) || [
-      { id: 'todo', title: 'To Do', tasks: [], order: 0 },
-      { id: 'inprogress', title: 'In Progress', tasks: [], order: 1 },
-      { id: 'done', title: 'Done', tasks: [], order: 2 },
+      { id: "todo", title: "To Do", tasks: [], order: 0 },
+      { id: "inprogress", title: "In Progress", tasks: [], order: 1 },
+      { id: "done", title: "Done", tasks: [], order: 2 },
     ];
     this.columnsSubject.next(columns);
     this.nextColumnId = columns.length
       ? Math.max(
-          ...columns.map((c: Column) => parseInt(c.id.replace('col', '')) || 0)
+          ...columns.map((c: Column) => parseInt(c.id.replace("col", "")) || 0)
         ) + 1
       : 1;
     this.saveColumns();
@@ -64,13 +64,13 @@ export class TaskService {
 
   private saveTasks() {
     localStorage.setItem(
-      'kanban-tasks',
+      "kanban-tasks",
       JSON.stringify(this.tasksSubject.value)
     );
   }
   private saveColumns() {
     localStorage.setItem(
-      'kanban-columns',
+      "kanban-columns",
       JSON.stringify(this.columnsSubject.value)
     );
   }
@@ -120,8 +120,8 @@ export class TaskService {
   addTask(
     title: string,
     description: string,
-    priority: 'Low' | 'Medium' | 'High',
-    status = 'todo'
+    priority: "Low" | "Medium" | "High",
+    status = "todo"
   ) {
     const tasks = this.getTasks();
     const maxOrder = Math.max(
@@ -190,5 +190,43 @@ export class TaskService {
       )
     );
     this.saveTasks();
+  }
+
+  removeColumn(columnId: string): boolean {
+    const columns = this.getColumns();
+
+    // Don't remove if it's a default column or the last remaining column
+    if (this.isDefaultColumn(columnId) || columns.length <= 1) {
+      return false;
+    }
+
+    // Get the first available column as fallback for tasks
+    const fallbackColumn = columns.find((c) => c.id !== columnId);
+    if (!fallbackColumn) return false;
+
+    // Move all tasks from this column to the fallback column
+    const tasks = this.getTasks();
+    const updatedTasks = tasks.map((task) =>
+      task.status === columnId ? { ...task, status: fallbackColumn.id } : task
+    );
+
+    // Remove the column and update order of remaining columns
+    const updatedColumns = columns
+      .filter((c) => c.id !== columnId)
+      .map((col, idx) => ({ ...col, order: idx }));
+
+    // Update the state
+    this.columnsSubject.next(updatedColumns);
+    this.tasksSubject.next(updatedTasks);
+
+    // Save changes
+    this.saveColumns();
+    this.saveTasks();
+
+    return true;
+  }
+
+  isDefaultColumn(columnId: string): boolean {
+    return ["todo", "inprogress", "done"].includes(columnId);
   }
 }
