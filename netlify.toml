@@ -3,7 +3,7 @@
   command = "cd my-kanban-project && npm install --legacy-peer-deps && npm run build"
   
   # Publish directory - where the built files are located
-  publish = "my-kanban-project/dist/my-kanban-project"
+  publish = "my-kanban-project/dist/my-kanban-project/browser"
 
 # Redirect all routes to index.html for Angular routing
 [[redirects]]
