@@ -1,6 +1,6 @@
 [build]
   # Build command - use npm run build which runs ng build
-  command = "cd my-kanban-project && npm install && npm run build"
+  command = "cd my-kanban-project && npm install --legacy-peer-deps && npm run build"
   
   # Publish directory - where the built files are located
   publish = "my-kanban-project/dist/my-kanban-project"
