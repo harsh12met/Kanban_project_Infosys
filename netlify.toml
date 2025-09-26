@@ -1,0 +1,17 @@
+[build]
+  # Build command - use npm run build which runs ng build
+  command = "cd my-kanban-project && npm install && npm run build"
+  
+  # Publish directory - where the built files are located
+  publish = "my-kanban-project/dist/my-kanban-project"
+
+# Redirect all routes to index.html for Angular routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Environment variables (optional)
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
