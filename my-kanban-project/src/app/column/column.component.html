@@ -1,13 +1,39 @@
 <!-- Kanban Column -->
 <div
   [class]="getColumnClass()"
-  (dragover)="onDragOver($event)"
-  (dragleave)="onDragLeave($event)"
-  (drop)="onDrop($event)"
+  (dragstart)="onColumnDragStart($event)"
+  (dragover)="onColumnDragOver($event)"
+  (dragleave)="onColumnDragLeave($event)"
+  (drop)="onColumnDrop($event)"
 >
   <!-- Column Header -->
   <div class="column-header">
-    <h3 class="column-title">{{ title }}</h3>
+    <!-- View Mode -->
+    <div *ngIf="!isEditingTitle" class="column-title-container">
+      <h3 class="column-title">{{ title }}</h3>
+      <button
+        class="edit-title-btn"
+        (click)="startEditTitle()"
+        title="Edit column name"
+      >
+        ✏️
+      </button>
+    </div>
+    
+    <!-- Edit Mode -->
+    <div *ngIf="isEditingTitle" class="column-title-edit">
+      <input
+        type="text"
+        [(ngModel)]="editTitleValue"
+        (keyup.enter)="saveTitle()"
+        (keyup.escape)="cancelEditTitle()"
+        class="edit-title-input"
+        #titleInput
+      />
+      <button class="save-title-btn" (click)="saveTitle()" title="Save">✓</button>
+      <button class="cancel-title-btn" (click)="cancelEditTitle()" title="Cancel">✕</button>
+    </div>
+    
     <div class="column-actions">
       <span class="task-count">{{ tasks.length }}</span>
       <button
@@ -28,14 +54,17 @@
     </div>
   </div>
 
-  <!-- Add Task Component (only shown for todo column) -->
-  <div *ngIf="shouldShowAddButton()" class="add-task-container">
+  <!-- Add Task Component (shown for all columns) -->
+  <div class="add-task-container">
     <app-add-task [columnStatus]="columnId" (taskAdded)="onTaskAdded()">
     </app-add-task>
   </div>
 
   <!-- Tasks Container - Scrollable -->
-  <div class="tasks-container">
+  <div class="tasks-container"
+       (dragover)="onTaskDragOver($event)"
+       (dragleave)="onTaskDragLeave($event)"
+       (drop)="onTaskDrop($event)">
     <!-- Drop zone at the top -->
     <div
       class="drop-zone"

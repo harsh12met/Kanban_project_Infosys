@@ -70,6 +70,33 @@
   position: relative;
 }
 
+/* Horizontal scrolling when more than 3 columns */
+.columns-container.scrollable {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 30px; /* Space for scrollbar */
+}
+
+/* Custom scrollbar for horizontal scroll */
+.columns-container.scrollable::-webkit-scrollbar {
+  height: 12px;
+}
+
+.columns-container.scrollable::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  margin: 0 20px;
+}
+
+.columns-container.scrollable::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+}
+
+.columns-container.scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
 /* Add Column Form */
 .add-column-form {
   position: absolute;
@@ -165,6 +192,12 @@
   height: 100%; /* Full height of container */
   display: flex;
   flex-direction: column;
+}
+
+/* When scrollable, maintain minimum width for columns */
+.columns-container.scrollable .column-wrapper {
+  flex: 0 0 320px; /* Fixed width for scrollable columns */
+  min-width: 320px;
 }
 
 /* Responsive Design */

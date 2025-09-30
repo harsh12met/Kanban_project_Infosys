@@ -18,6 +18,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   newColumnTitle = "";
   selectedColumnId = "";
   private subscription = new Subscription();
+  draggedColumnIndex = -1;
 
   constructor(private taskService: TaskService) {}
 
@@ -78,5 +79,33 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   trackColumnById(index: number, column: Column) {
     return column.id;
+  }
+
+  updateColumnTitle(event: {columnId: string, newTitle: string}) {
+    this.taskService.updateColumnTitle(event.columnId, event.newTitle);
+    this.onTasksUpdated();
+  }
+
+  onColumnDragStart(event: {event: DragEvent, columnIndex: number}) {
+    this.draggedColumnIndex = event.columnIndex;
+    event.event.dataTransfer!.setData('text/plain', event.columnIndex.toString());
+    event.event.dataTransfer!.effectAllowed = 'move';
+  }
+
+  onColumnDragOver(event: {event: DragEvent, columnIndex: number}) {
+    event.event.preventDefault();
+    event.event.dataTransfer!.dropEffect = 'move';
+  }
+
+  onColumnDrop(event: {event: DragEvent, columnIndex: number}) {
+    event.event.preventDefault();
+    const targetIndex = event.columnIndex;
+    
+    if (this.draggedColumnIndex !== -1 && this.draggedColumnIndex !== targetIndex) {
+      this.taskService.reorderColumns(this.draggedColumnIndex, targetIndex);
+      this.onTasksUpdated();
+    }
+    
+    this.draggedColumnIndex = -1;
   }
 }

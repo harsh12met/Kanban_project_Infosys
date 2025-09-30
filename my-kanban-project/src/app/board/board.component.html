@@ -20,16 +20,22 @@
   </div>
 
   <!-- Columns Container -->
-  <div class="columns-container">
+  <div class="columns-container" [class.scrollable]="columns.length > 3">
     <app-column
-      *ngFor="let column of columns; trackBy: trackColumnById"
+      *ngFor="let column of columns; let i = index; trackBy: trackColumnById"
       [columnId]="column.id"
       [title]="column.title"
       [tasks]="column.tasks"
+      [columnIndex]="i"
       (tasksUpdated)="onTasksUpdated()"
       (addColumnRequested)="openAddColumnForm(column.id)"
       (removeColumnRequested)="removeColumn($event)"
+      (columnTitleUpdated)="updateColumnTitle($event)"
+      (columnDragStart)="onColumnDragStart($event)"
+      (columnDragOver)="onColumnDragOver($event)"
+      (columnDrop)="onColumnDrop($event)"
       class="column-wrapper"
+      draggable="true"
     >
     </app-column>
 

@@ -229,4 +229,35 @@ export class TaskService {
   isDefaultColumn(columnId: string): boolean {
     return ["todo", "inprogress", "done"].includes(columnId);
   }
+
+  updateColumnTitle(columnId: string, newTitle: string) {
+    const columns = this.getColumns();
+    const columnIndex = columns.findIndex(c => c.id === columnId);
+    if (columnIndex !== -1) {
+      columns[columnIndex] = { ...columns[columnIndex], title: newTitle.trim() };
+      this.columnsSubject.next([...columns]);
+      this.saveColumns();
+    }
+  }
+
+  reorderColumns(fromIndex: number, toIndex: number) {
+    const columns = this.getColumns();
+    if (fromIndex < 0 || fromIndex >= columns.length || toIndex < 0 || toIndex >= columns.length) {
+      return;
+    }
+
+    // Remove the column from its current position
+    const [movedColumn] = columns.splice(fromIndex, 1);
+    
+    // Insert it at the target position
+    columns.splice(toIndex, 0, movedColumn);
+    
+    // Update order values
+    columns.forEach((col, index) => {
+      col.order = index;
+    });
+
+    this.columnsSubject.next([...columns]);
+    this.saveColumns();
+  }
 }

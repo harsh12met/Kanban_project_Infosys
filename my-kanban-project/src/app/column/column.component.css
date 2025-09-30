@@ -17,6 +17,12 @@
   background: #f1f8e9;
 }
 
+.kanban-column.column-drag-over {
+  border-color: #2196f3;
+  background: #e3f2fd;
+  transform: scale(1.02);
+}
+
 /* Column Header */
 .column-header {
   display: flex;
@@ -30,6 +36,13 @@
   flex-shrink: 0; /* Don't shrink header */
 }
 
+.column-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
 .column-title {
   margin: 0;
   font-size: 18px;
@@ -37,6 +50,73 @@
   color: #333;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.edit-title-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.edit-title-btn:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.column-title-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.edit-title-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #2196f3;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: white;
+}
+
+.edit-title-input:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.save-title-btn, .cancel-title-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.save-title-btn {
+  color: #4caf50;
+}
+
+.save-title-btn:hover {
+  background-color: #e8f5e8;
+}
+
+.cancel-title-btn {
+  color: #f44336;
+}
+
+.cancel-title-btn:hover {
+  background-color: #ffebee;
 }
 
 .column-actions {
