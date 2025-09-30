@@ -1,11 +1,11 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 export interface Task {
   id: number;
   title: string;
   description: string;
-  priority: "Low" | "Medium" | "High";
+  priority: 'Low' | 'Medium' | 'High';
   status: string;
   createdAt: Date;
   order: number;
@@ -18,7 +18,7 @@ export interface Column {
   order: number;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class TaskService {
   private tasksSubject = new BehaviorSubject<Task[]>([]);
   private columnsSubject = new BehaviorSubject<Column[]>([]);
@@ -33,7 +33,7 @@ export class TaskService {
 
   private loadData() {
     // Load tasks
-    const tasks = JSON.parse(localStorage.getItem("kanban-tasks") || "[]").map(
+    const tasks = JSON.parse(localStorage.getItem('kanban-tasks') || '[]').map(
       (t: any) => ({
         ...t,
         createdAt: new Date(t.createdAt),
@@ -47,16 +47,16 @@ export class TaskService {
 
     // Load columns
     const columns = JSON.parse(
-      localStorage.getItem("kanban-columns") || "null"
+      localStorage.getItem('kanban-columns') || 'null'
     ) || [
-      { id: "todo", title: "To Do", tasks: [], order: 0 },
-      { id: "inprogress", title: "In Progress", tasks: [], order: 1 },
-      { id: "done", title: "Done", tasks: [], order: 2 },
+      { id: 'todo', title: 'To Do', tasks: [], order: 0 },
+      { id: 'inprogress', title: 'In Progress', tasks: [], order: 1 },
+      { id: 'done', title: 'Done', tasks: [], order: 2 },
     ];
     this.columnsSubject.next(columns);
     this.nextColumnId = columns.length
       ? Math.max(
-          ...columns.map((c: Column) => parseInt(c.id.replace("col", "")) || 0)
+          ...columns.map((c: Column) => parseInt(c.id.replace('col', '')) || 0)
         ) + 1
       : 1;
     this.saveColumns();
@@ -64,13 +64,13 @@ export class TaskService {
 
   private saveTasks() {
     localStorage.setItem(
-      "kanban-tasks",
+      'kanban-tasks',
       JSON.stringify(this.tasksSubject.value)
     );
   }
   private saveColumns() {
     localStorage.setItem(
-      "kanban-columns",
+      'kanban-columns',
       JSON.stringify(this.columnsSubject.value)
     );
   }
@@ -120,8 +120,8 @@ export class TaskService {
   addTask(
     title: string,
     description: string,
-    priority: "Low" | "Medium" | "High",
-    status = "todo"
+    priority: 'Low' | 'Medium' | 'High',
+    status = 'todo'
   ) {
     const tasks = this.getTasks();
     const maxOrder = Math.max(
@@ -227,14 +227,17 @@ export class TaskService {
   }
 
   isDefaultColumn(columnId: string): boolean {
-    return ["todo", "inprogress", "done"].includes(columnId);
+    return ['todo', 'inprogress', 'done'].includes(columnId);
   }
 
   updateColumnTitle(columnId: string, newTitle: string) {
     const columns = this.getColumns();
-    const columnIndex = columns.findIndex(c => c.id === columnId);
+    const columnIndex = columns.findIndex((c) => c.id === columnId);
     if (columnIndex !== -1) {
-      columns[columnIndex] = { ...columns[columnIndex], title: newTitle.trim() };
+      columns[columnIndex] = {
+        ...columns[columnIndex],
+        title: newTitle.trim(),
+      };
       this.columnsSubject.next([...columns]);
       this.saveColumns();
     }
@@ -242,16 +245,21 @@ export class TaskService {
 
   reorderColumns(fromIndex: number, toIndex: number) {
     const columns = this.getColumns();
-    if (fromIndex < 0 || fromIndex >= columns.length || toIndex < 0 || toIndex >= columns.length) {
+    if (
+      fromIndex < 0 ||
+      fromIndex >= columns.length ||
+      toIndex < 0 ||
+      toIndex >= columns.length
+    ) {
       return;
     }
 
     // Remove the column from its current position
     const [movedColumn] = columns.splice(fromIndex, 1);
-    
+
     // Insert it at the target position
     columns.splice(toIndex, 0, movedColumn);
-    
+
     // Update order values
     columns.forEach((col, index) => {
       col.order = index;

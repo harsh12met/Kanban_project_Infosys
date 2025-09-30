@@ -1,13 +1,16 @@
 <!-- Kanban Column -->
 <div
   [class]="getColumnClass()"
-  (dragstart)="onColumnDragStart($event)"
-  (dragover)="onColumnDragOver($event)"
-  (dragleave)="onColumnDragLeave($event)"
-  (drop)="onColumnDrop($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
 >
   <!-- Column Header -->
-  <div class="column-header">
+  <div
+    class="column-header"
+    draggable="true"
+    (dragstart)="onColumnDragStart($event)"
+  >
     <!-- View Mode -->
     <div *ngIf="!isEditingTitle" class="column-title-container">
       <h3 class="column-title">{{ title }}</h3>
@@ -19,7 +22,7 @@
         ✏️
       </button>
     </div>
-    
+
     <!-- Edit Mode -->
     <div *ngIf="isEditingTitle" class="column-title-edit">
       <input
@@ -30,10 +33,18 @@
         class="edit-title-input"
         #titleInput
       />
-      <button class="save-title-btn" (click)="saveTitle()" title="Save">✓</button>
-      <button class="cancel-title-btn" (click)="cancelEditTitle()" title="Cancel">✕</button>
+      <button class="save-title-btn" (click)="saveTitle()" title="Save">
+        ✓
+      </button>
+      <button
+        class="cancel-title-btn"
+        (click)="cancelEditTitle()"
+        title="Cancel"
+      >
+        ✕
+      </button>
     </div>
-    
+
     <div class="column-actions">
       <span class="task-count">{{ tasks.length }}</span>
       <button
@@ -61,10 +72,7 @@
   </div>
 
   <!-- Tasks Container - Scrollable -->
-  <div class="tasks-container"
-       (dragover)="onTaskDragOver($event)"
-       (dragleave)="onTaskDragLeave($event)"
-       (drop)="onTaskDrop($event)">
+  <div class="tasks-container">
     <!-- Drop zone at the top -->
     <div
       class="drop-zone"

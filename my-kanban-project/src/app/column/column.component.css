@@ -34,6 +34,12 @@
   background: #ffffff;
   border-radius: 8px 8px 0 0;
   flex-shrink: 0; /* Don't shrink header */
+  cursor: grab; /* Show that header is draggable */
+  user-select: none;
+}
+
+.column-header:active {
+  cursor: grabbing;
 }
 
 .column-title-container {

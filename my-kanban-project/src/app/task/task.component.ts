@@ -79,6 +79,9 @@ export class TaskComponent {
   // Handle drag start
   onDragStart(event: DragEvent): void {
     if (event.dataTransfer) {
+      // Prevent event from bubbling up to column
+      event.stopPropagation();
+
       // Set the data - this must be done first and is most important
       event.dataTransfer.setData('text/plain', this.task.id.toString());
       event.dataTransfer.effectAllowed = 'move';

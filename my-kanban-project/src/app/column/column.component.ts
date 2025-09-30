@@ -1,16 +1,24 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { TaskComponent } from "../task/task.component";
-import { AddTaskComponent } from "../add-task/add-task.component";
-import { Task, TaskService } from "../services/task.service";
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TaskComponent } from '../task/task.component';
+import { AddTaskComponent } from '../add-task/add-task.component';
+import { Task, TaskService } from '../services/task.service';
 
 @Component({
-  selector: "app-column",
+  selector: 'app-column',
   standalone: true,
   imports: [CommonModule, FormsModule, TaskComponent, AddTaskComponent],
-  templateUrl: "./column.component.html",
-  styleUrl: "./column.component.css",
+  templateUrl: './column.component.html',
+  styleUrl: './column.component.css',
 })
 export class ColumnComponent {
   @Input() columnId!: string;
@@ -20,10 +28,22 @@ export class ColumnComponent {
   @Output() tasksUpdated = new EventEmitter<void>();
   @Output() addColumnRequested = new EventEmitter<string>();
   @Output() removeColumnRequested = new EventEmitter<string>();
-  @Output() columnTitleUpdated = new EventEmitter<{columnId: string, newTitle: string}>();
-  @Output() columnDragStart = new EventEmitter<{event: DragEvent, columnIndex: number}>();
-  @Output() columnDragOver = new EventEmitter<{event: DragEvent, columnIndex: number}>();
-  @Output() columnDrop = new EventEmitter<{event: DragEvent, columnIndex: number}>();
+  @Output() columnTitleUpdated = new EventEmitter<{
+    columnId: string;
+    newTitle: string;
+  }>();
+  @Output() columnDragStart = new EventEmitter<{
+    event: DragEvent;
+    columnIndex: number;
+  }>();
+  @Output() columnDragOver = new EventEmitter<{
+    event: DragEvent;
+    columnIndex: number;
+  }>();
+  @Output() columnDrop = new EventEmitter<{
+    event: DragEvent;
+    columnIndex: number;
+  }>();
   @ViewChild('titleInput') titleInput!: ElementRef;
 
   isDragOver = false;
@@ -34,34 +54,10 @@ export class ColumnComponent {
 
   constructor(private taskService: TaskService) {}
 
-  onDragOver(e: DragEvent) {
-    e.preventDefault();
-    e.dataTransfer!.dropEffect = "move";
-    this.isDragOver = true;
-  }
-
-  onDragLeave(e: DragEvent) {
-    e.preventDefault();
-    this.isDragOver = false;
-    this.dragOverIndex = -1;
-  }
-
-  onDrop(e: DragEvent) {
-    e.preventDefault();
-    this.isDragOver = false;
-    this.dragOverIndex = -1;
-    const taskId = parseInt(e.dataTransfer!.getData("text/plain"));
-    const task = this.taskService.getTaskById(taskId);
-    if (task && task.status !== this.columnId) {
-      this.taskService.moveTask(taskId, this.columnId);
-      this.tasksUpdated.emit();
-    }
-  }
-
   onDragOverAtIndex(e: DragEvent, index: number) {
     e.preventDefault();
     e.stopPropagation();
-    e.dataTransfer!.dropEffect = "move";
+    e.dataTransfer!.dropEffect = 'move';
     this.dragOverIndex = index;
     this.isDragOver = true;
   }
@@ -72,7 +68,7 @@ export class ColumnComponent {
     this.isDragOver = false;
     this.dragOverIndex = -1;
 
-    const taskId = parseInt(e.dataTransfer!.getData("text/plain"));
+    const taskId = parseInt(e.dataTransfer!.getData('text/plain'));
     if (isNaN(taskId)) return;
     const task = this.taskService.getTaskById(taskId);
     if (!task) return;
@@ -103,9 +99,9 @@ export class ColumnComponent {
     this.tasksUpdated.emit();
   }
   getColumnClass() {
-    let classes = "kanban-column";
-    if (this.isDragOver) classes += " drag-over";
-    if (this.isColumnDragOver) classes += " column-drag-over";
+    let classes = 'kanban-column';
+    if (this.isDragOver) classes += ' drag-over';
+    if (this.isColumnDragOver) classes += ' column-drag-over';
     return classes;
   }
   shouldShowAddButton() {
@@ -131,7 +127,7 @@ export class ColumnComponent {
   }
 
   isDefaultColumn(): boolean {
-    return ["todo", "inprogress", "done"].includes(this.columnId);
+    return ['todo', 'inprogress', 'done'].includes(this.columnId);
   }
 
   trackTaskById(index: number, task: Task) {
@@ -151,10 +147,13 @@ export class ColumnComponent {
   }
 
   saveTitle() {
-    if (this.editTitleValue.trim() && this.editTitleValue.trim() !== this.title) {
+    if (
+      this.editTitleValue.trim() &&
+      this.editTitleValue.trim() !== this.title
+    ) {
       this.columnTitleUpdated.emit({
         columnId: this.columnId,
-        newTitle: this.editTitleValue.trim()
+        newTitle: this.editTitleValue.trim(),
       });
     }
     this.cancelEditTitle();
@@ -167,64 +166,62 @@ export class ColumnComponent {
 
   // Column drag and drop methods
   onColumnDragStart(e: DragEvent) {
-    e.stopPropagation();
-    this.columnDragStart.emit({event: e, columnIndex: this.columnIndex});
+    // This is called only from column header now
+    e.stopPropagation(); // Prevent interference with task drag
+    e.dataTransfer!.setData(
+      'application/x-column-index',
+      this.columnIndex.toString()
+    );
+    e.dataTransfer!.effectAllowed = 'move';
+    this.columnDragStart.emit({ event: e, columnIndex: this.columnIndex });
   }
 
-  onColumnDragOver(e: DragEvent) {
-    // Only handle column drops, not task drops
-    const data = e.dataTransfer?.getData('text/plain');
-    if (data && !isNaN(parseInt(data)) && parseInt(data) < 100) { // Column indices are small numbers
-      e.preventDefault();
-      e.stopPropagation();
+  // Restore original task drag and drop methods
+  onDragOver(e: DragEvent) {
+    e.preventDefault();
+
+    // Check if it's a column being dragged
+    const columnData = e.dataTransfer?.types.includes(
+      'application/x-column-index'
+    );
+    if (columnData) {
+      e.dataTransfer!.dropEffect = 'move';
       this.isColumnDragOver = true;
-      this.columnDragOver.emit({event: e, columnIndex: this.columnIndex});
+      this.columnDragOver.emit({ event: e, columnIndex: this.columnIndex });
+      return;
     }
+
+    // Handle task drag over
+    e.dataTransfer!.dropEffect = 'move';
+    this.isDragOver = true;
   }
 
-  onColumnDragLeave(e: DragEvent) {
-    e.stopPropagation();
-    this.isColumnDragOver = false;
-  }
-
-  onColumnDrop(e: DragEvent) {
-    const data = e.dataTransfer?.getData('text/plain');
-    if (data && !isNaN(parseInt(data)) && parseInt(data) < 100) { // Column indices are small numbers
-      e.preventDefault();
-      e.stopPropagation();
-      this.isColumnDragOver = false;
-      this.columnDrop.emit({event: e, columnIndex: this.columnIndex});
-    }
-  }
-
-  // Task drag and drop methods (renamed to avoid conflicts)
-  onTaskDragOver(e: DragEvent) {
-    const data = e.dataTransfer?.getData('text/plain');
-    if (data && !isNaN(parseInt(data)) && parseInt(data) > 100) { // Task IDs are larger numbers
-      e.preventDefault();
-      e.dataTransfer!.dropEffect = "move";
-      this.isDragOver = true;
-    }
-  }
-
-  onTaskDragLeave(e: DragEvent) {
+  onDragLeave(e: DragEvent) {
     e.preventDefault();
     this.isDragOver = false;
+    this.isColumnDragOver = false;
     this.dragOverIndex = -1;
   }
 
-  onTaskDrop(e: DragEvent) {
-    const data = e.dataTransfer?.getData('text/plain');
-    if (data && !isNaN(parseInt(data)) && parseInt(data) > 100) { // Task IDs are larger numbers
-      e.preventDefault();
-      this.isDragOver = false;
-      this.dragOverIndex = -1;
-      const taskId = parseInt(data);
-      const task = this.taskService.getTaskById(taskId);
-      if (task && task.status !== this.columnId) {
-        this.taskService.moveTask(taskId, this.columnId);
-        this.tasksUpdated.emit();
-      }
+  onDrop(e: DragEvent) {
+    e.preventDefault();
+    this.isDragOver = false;
+    this.isColumnDragOver = false;
+    this.dragOverIndex = -1;
+
+    // Check if it's a column being dropped
+    const columnIndex = e.dataTransfer!.getData('application/x-column-index');
+    if (columnIndex) {
+      this.columnDrop.emit({ event: e, columnIndex: this.columnIndex });
+      return;
+    }
+
+    // Handle task drop
+    const taskId = parseInt(e.dataTransfer!.getData('text/plain'));
+    const task = this.taskService.getTaskById(taskId);
+    if (task && task.status !== this.columnId) {
+      this.taskService.moveTask(taskId, this.columnId);
+      this.tasksUpdated.emit();
     }
   }
 }

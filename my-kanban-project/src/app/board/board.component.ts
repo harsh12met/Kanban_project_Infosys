@@ -1,22 +1,22 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { ColumnComponent } from "../column/column.component";
-import { TaskService, Column } from "../services/task.service";
-import { Subscription, combineLatest } from "rxjs";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ColumnComponent } from '../column/column.component';
+import { TaskService, Column } from '../services/task.service';
+import { Subscription, combineLatest } from 'rxjs';
 
 @Component({
-  selector: "app-board",
+  selector: 'app-board',
   standalone: true,
   imports: [CommonModule, FormsModule, ColumnComponent],
-  templateUrl: "./board.component.html",
-  styleUrl: "./board.component.css",
+  templateUrl: './board.component.html',
+  styleUrl: './board.component.css',
 })
 export class BoardComponent implements OnInit, OnDestroy {
   columns: Column[] = [];
   showAddColumn = false;
-  newColumnTitle = "";
-  selectedColumnId = "";
+  newColumnTitle = '';
+  selectedColumnId = '';
   private subscription = new Subscription();
   draggedColumnIndex = -1;
 
@@ -39,21 +39,21 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (this.newColumnTitle.trim()) {
       this.taskService.addColumn(this.newColumnTitle, this.selectedColumnId);
       this.showAddColumn = false;
-      this.newColumnTitle = "";
-      this.selectedColumnId = "";
+      this.newColumnTitle = '';
+      this.selectedColumnId = '';
     }
   }
 
   openAddColumnForm(columnId: string) {
     this.selectedColumnId = columnId;
     this.showAddColumn = true;
-    this.newColumnTitle = "";
+    this.newColumnTitle = '';
   }
 
   cancelAddColumn() {
     this.showAddColumn = false;
-    this.newColumnTitle = "";
-    this.selectedColumnId = "";
+    this.newColumnTitle = '';
+    this.selectedColumnId = '';
   }
 
   removeColumn(columnId: string) {
@@ -69,10 +69,10 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   getTaskStatistics() {
     return {
-      todo: this.columns.find((c) => c.id === "todo")?.tasks.length || 0,
+      todo: this.columns.find((c) => c.id === 'todo')?.tasks.length || 0,
       inprogress:
-        this.columns.find((c) => c.id === "inprogress")?.tasks.length || 0,
-      done: this.columns.find((c) => c.id === "done")?.tasks.length || 0,
+        this.columns.find((c) => c.id === 'inprogress')?.tasks.length || 0,
+      done: this.columns.find((c) => c.id === 'done')?.tasks.length || 0,
       total: this.columns.reduce((sum, col) => sum + col.tasks.length, 0),
     };
   }
@@ -81,31 +81,32 @@ export class BoardComponent implements OnInit, OnDestroy {
     return column.id;
   }
 
-  updateColumnTitle(event: {columnId: string, newTitle: string}) {
+  updateColumnTitle(event: { columnId: string; newTitle: string }) {
     this.taskService.updateColumnTitle(event.columnId, event.newTitle);
     this.onTasksUpdated();
   }
 
-  onColumnDragStart(event: {event: DragEvent, columnIndex: number}) {
+  onColumnDragStart(event: { event: DragEvent; columnIndex: number }) {
     this.draggedColumnIndex = event.columnIndex;
-    event.event.dataTransfer!.setData('text/plain', event.columnIndex.toString());
-    event.event.dataTransfer!.effectAllowed = 'move';
   }
 
-  onColumnDragOver(event: {event: DragEvent, columnIndex: number}) {
+  onColumnDragOver(event: { event: DragEvent; columnIndex: number }) {
     event.event.preventDefault();
     event.event.dataTransfer!.dropEffect = 'move';
   }
 
-  onColumnDrop(event: {event: DragEvent, columnIndex: number}) {
+  onColumnDrop(event: { event: DragEvent; columnIndex: number }) {
     event.event.preventDefault();
+    const sourceIndex = parseInt(
+      event.event.dataTransfer!.getData('application/x-column-index')
+    );
     const targetIndex = event.columnIndex;
-    
-    if (this.draggedColumnIndex !== -1 && this.draggedColumnIndex !== targetIndex) {
-      this.taskService.reorderColumns(this.draggedColumnIndex, targetIndex);
+
+    if (!isNaN(sourceIndex) && sourceIndex !== targetIndex) {
+      this.taskService.reorderColumns(sourceIndex, targetIndex);
       this.onTasksUpdated();
     }
-    
+
     this.draggedColumnIndex = -1;
   }
 }

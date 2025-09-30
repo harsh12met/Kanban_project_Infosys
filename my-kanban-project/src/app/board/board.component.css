@@ -70,6 +70,32 @@
   position: relative;
 }
 
+/* When scrollable, enable horizontal scrolling */
+.columns-container.scrollable {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 30px; /* Add space for scrollbar */
+}
+
+/* Custom scrollbar for columns container */
+.columns-container.scrollable::-webkit-scrollbar {
+  height: 12px;
+}
+
+.columns-container.scrollable::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.columns-container.scrollable::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+}
+
+.columns-container.scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
 /* Horizontal scrolling when more than 3 columns */
 .columns-container.scrollable {
   overflow-x: auto;
